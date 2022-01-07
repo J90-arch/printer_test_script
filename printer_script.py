@@ -6,6 +6,7 @@ import argparse
 def netcat(ip, port, content):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print(ip)
         sock.connect((ip, port))
         sock.sendall(content.encode('utf-8'))
         sock.shutdown(socket.SHUT_WR)
@@ -48,7 +49,7 @@ def main():
     if args.HostFile:
         with open(args.HostFile, 'r') as ip_file:
             for ip in ip_file:
-                netcat(ip, port, content)
+                netcat(ip.strip(), port, content)
 
 if __name__ == "__main__":
     main()
