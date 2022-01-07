@@ -6,7 +6,6 @@ import argparse
 def netcat(ip, port, content):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(ip)
         sock.connect((ip, port))
         sock.sendall(content.encode('utf-8'))
         sock.shutdown(socket.SHUT_WR)
