@@ -4,15 +4,15 @@ import time
 import argparse
 
 def netcat(ip, port, content):
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((ip, port))
-        sock.sendall(content)
-        sock.shutdown(socket.SHUT_WR)
-        sock.close()
-        print(f'Connection to {ip} closed')
-    except:
-        print(f'Failed to send to {ip}')
+    #try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((ip, port))
+    sock.sendall(content.encode('utf-8'))
+    sock.shutdown(socket.SHUT_WR)
+    sock.close()
+    print(f'Connection to {ip} closed')
+#except:
+    #    print(f'Failed to send to {ip}')
 
 def main():
     content = "test_text\n"
