@@ -1,37 +1,51 @@
 import sys
 import socket
 import time
+import argparse
 
-hosts_file = sys.argv[1]
-port = 9100
+def netcat(ip, port, content):
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((ip, port))
+        sock.sendall(content)
+        sock.shutdown(socket.SHUT_WR)
+        sock.close()
+        print(f'Connection to {ip} closed')
+    except:
+        print(f'Failed to send to {ip}')
 
-def numLines():
-    with open(hosts_file) as f:
-        line_count = 0
-        for line in f:
-            line_count += 1
-    return line_count
+def main():
+    content = "test_text\n"
+    port = 9100
 
-def netcat(hn, p, c):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((hn, p))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--Port", help = "Port to use, default 9100")
+    parser.add_argument("-f", "--HostFile", help = "File with ips of printers, separetad by commas, no spaces")
+    parser.add_argument("-x", "--Target", help = "Single ip of a printer to use instead of a file")
+    parser.add_argument("-t", "--Text", help = "Text to send")
+    args = parser.parse_args()
 
-    sock.sendall(c)
-    sock.shutdown(socket.SHUT_WR)
+    if args.Target and args.HostFile:
+        print("Use single ip OR a list of ips in a file!")
+        exit()
 
-    print("CONNECTION CLOSED")
-    sock.close()
+    if not args.Target and not args.HostFile:
+        print("Please provide ips")
 
-def processFile(file, c):
-    i = 0
-    while i<numLines():
-        netcat(file.readline().rstrip(), port, c)
-        i+=1
+    if args.Port:
+        port = args.Port
 
+    if args.Text:
+        content = args.Text
+    
+    if args.Target:
+        for ip in args.Target.split(","):
+            netcat(ip, port, content)
 
-content = "text\n" #change this to what you want to print
+    if args.HostFile:
+        with open(args.HostFile, 'r') as ip_file:
+            for ip in ip_file:
+                netcat(ip, port, content)
 
-hfile = open(hosts_file, "r")
-processFile(hfile, content.encode())
-
-hfile.close()
+if __name__ == "__main__":
+    main()
